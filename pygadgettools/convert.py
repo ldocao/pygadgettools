@@ -7,6 +7,7 @@ import numpy as np
 
 
 ### i should use a wrapper convert.cartesian2spherical(pos,'pos')
+##oh lala
 
 
 ## POSITION
