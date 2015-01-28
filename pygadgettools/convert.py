@@ -7,20 +7,17 @@ import numpy as np
 
 
 ### i should use a wrapper convert.cartesian2spherical(pos,'pos')
-##oh lala
+
 
 
 ## POSITION
-def position_cartesian2spherical(pos,center=[0,0,0]):
+def position_cartesian2spherical(pos):
     '''
     PURPOSE : convert POS cartesian into spherical coordinates
     INPUTS : pos = position in cartesian coordinates in Gadget format
              center = center of the new coordinate system in cartesian
     OUTPUTS: newpos = position in spherical coordinates in Gadget format
     '''
-
-    #shift center
-    pos-=center
 
     #save cartesian position of each particle
     x=pos[:,0]
@@ -46,27 +43,23 @@ def position_cartesian2spherical(pos,center=[0,0,0]):
 
 
 
-def cartesian2cylindrical(pos,center=[0,0,0]):
+def position_cartesian2cylindrical(pos):
     '''
     PURPOSE : convert POS cartesian into cylindrical coordinates
     INPUTS : pos = position in cartesian coordinates in Gadget format
              center = center of the new coordinate system in cartesian
     '''
     
-    #shift center
-    pos-=center
-    
-
     #save cartesian position of each particle
     x=pos[:,0]
     y=pos[:,1]
     z=pos[:,2]
 
-    r= np.sqrt(x**2+y**2)
+    rho= np.sqrt(x**2+y**2)
     theta=np.arctan2(y,x)
 
 
-    return np.dstack((r,theta,z))[0]
+    return np.dstack((rho,theta,z))[0]
 
 
 
@@ -88,10 +81,149 @@ def position_spherical2cartesian(pos):
     return np.dstack((x,y,z))[0]
 
 
+def position_spherical2cylindrical(pos):
+    """
+    PURPOSE: convert position spherical to cylindrical coordinates
+    INPUTS: pos = [r,theta,phi]
+    """
 
-## for other transformation see : http://www.geom.uiuc.edu/docs/reference/CRC-formulas/node42.html
+    r=pos[:,0]
+    theta_spherical=pos[:,1]
+    phi_spherical=pos[:,2]
+
+    rho=r*np.sin(theta_spherical)
+    theta_cylindrical=phi_spherical
+    z=r*np.cos(theta_spherical)
+
+    return np.dstack((rho,theta_cylindrical,z))[0]
+
+
+def position_cylindrical2cartesian(pos):
+    """
+    PURPOSE: convert cylindrical to cartesian coordinates
+    INPUTS: pos = [rho,theta,z]
+    COMMENTS: * center is not supported yet
+    """
+
+    rrho=pos[:,0]
+    theta=pos[:,1]
+    z=pos[:,2]
+
+    x=rho*np.cos(theta)
+    y=rho*np.sin(theta)
+    z=z
+
+    return np.dstack((x,y,z))[0]
+
+
+def position_cylindrical2spherical(pos):
+    """
+    PURPOSE: convert cylindrical to spherical coordinates
+    INPUTS: pos = [r,theta,z]
+    COMMENTS: * center is not supported yet
+    """
+
+    rho=pos[:,0]
+    theta_cylindrical=pos[:,1]
+    z=pos[:,2]
+
+    r=np.sqrt(rho**2+z**2)
+    theta_spherical=np.arctan2(rho,z)
+    phi=theta_cylindrical
+
+    return np.dstack((r,theta_spherical,phi))[0]
+
+
+
+
 
 ## VELOCITY
+def velocity_cartesian2cylindrical(pos,vel):
+    '''
+    PURPOSE : convert VEL cartesian into cylindrical coordinates
+    INPUTS : pos = position in cartesian coordinates in Gadget format
+             vel = velocity in cartesian coordinates
+    '''
+    
+    #save cartesian position of each particle
+    x=pos[:,0]
+    y=pos[:,1]
+    z=pos[:,2]
+
+    #save cartesian velocities
+    vx=vel[:,0]
+    vy=vel[:,1]
+    vz=vel[:,2]
+
+    #convert to cylindrical coordinates
+    r,theta,z=position_cartesian2cylindrical(pos)
+
+    #compute cylindrical velocities
+    vr=vx*np.cos(theta) + vy*np.sin(theta)
+    vtheta=-vx*np.sin(theta) + vy*np.cos(theta)
+    vz=vz
+    
+
+    return np.dstack((vr,vtheta,vz))[0]
+
+
+
+
+
+
+
+def velocity_cartesian2spherical(pos,vel):
+    '''
+    PURPOSE : convert VEL cartesian into spherical coordinates
+    INPUTS : pos = position in cartesian coordinates in Gadget format
+             vel = velocity in cartesian coordinates
+    '''
+    
+    #save cartesian position of each particle
+    x=pos[:,0]
+    y=pos[:,1]
+    z=pos[:,2]
+
+    #save cartesian velocities
+    vx=vel[:,0]
+    vy=vel[:,1]
+    vz=vel[:,2]
+
+    #convert to spherical coordinates
+    r,theta,phi=position.cartesian2spherical(pos)
+
+
+    #compute spherical velocities
+    vr = 1./r * (x*vx+y*vy+z*vz)
+    vtheta = -1/np.sqrt(1.-(z/r)**2)* (vz + z/r**2*(x*vx+y*vy+z*vz))
+    vphi= r*np.sin(theta)/(x**2+y**2) * (x*vy - y*vx)
+
+    return np.dstack((vr,vtheta,vphi))[0]
+
+
+def velocity_cylindrical2cartesian(pos,vel):
+    '''
+    PURPOSE : convert VEL cartesian into spherical coordinates
+    INPUTS : pos = position in cylindrical coordinates similar to Gadget format
+             vel = velocity in cylindrical coordinates similar to Gadget format
+    '''
+    
+    #save cartesian position of each particle
+    r=pos[:,0]
+    theta=pos[:,1]
+    z=pos[:,2]
+
+    #save cyindrical velocities
+    vr=vel[:,0]
+    vtheta=vel[:,1]
+    vz=vel[:,2]
+
+    #compute cartesian velocities
+    vx = vr*np.cos(theta) - vtheta*np.sin(theta)
+    vy = vr*np.sin(theta) + vtheta*np.cos(theta)
+    vz = vz
+
+    return np.dstack((vx,vy,vz))[0]
 
 
 
