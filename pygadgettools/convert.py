@@ -105,7 +105,7 @@ def position_cylindrical2cartesian(pos):
     COMMENTS: * center is not supported yet
     """
 
-    rrho=pos[:,0]
+    rho=pos[:,0]
     theta=pos[:,1]
     z=pos[:,2]
 
