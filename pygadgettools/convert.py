@@ -3,7 +3,7 @@
 
 
 import numpy as np
-import warnings
+import warnings,sys
 
 
 ### i should use a wrapper convert.cartesian2spherical(pos,'pos')
@@ -74,6 +74,10 @@ def position_spherical2cartesian(pos):
     theta=pos[:,1]
     phi=pos[:,2]
 
+    if any(theta>np.pi) or any(theta<0): #sanity check. not necessary for phi.
+        warnings.warn("Theta beyond [0,pi]. Exiting.")
+        sys.exit()
+
     x=r*np.sin(theta)*np.cos(phi)
     y=r*np.sin(theta)*np.sin(phi)
     z=r*np.cos(theta)
@@ -90,6 +94,11 @@ def position_spherical2cylindrical(pos):
     r=pos[:,0]
     theta_spherical=pos[:,1]
     phi_spherical=pos[:,2]
+
+    if any(theta_spherical>np.pi) or any(theta_spherical<0): #sanity check. not necessary for phi.
+        warnings.warn("Theta beyond [0,pi]. Exiting.")
+        sys.exit()
+
 
     rho=r*np.sin(theta_spherical)
     theta_cylindrical=phi_spherical
