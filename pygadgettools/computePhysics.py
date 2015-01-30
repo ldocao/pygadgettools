@@ -6,7 +6,7 @@ import pdb,sys
 import changeCoordinates
 
 
-### SPECIFIC ANGULAR MOMENTUM
+### ANGULAR MOMENTUM
 def specificAngularMomentum_cartesian(pos,vel):
     """
     PURPOSE : compute the value of specific angular momentum in gadget units
@@ -109,3 +109,36 @@ def angularMomentum(pos,vel,mass,coordinates='cartesian'):
     
     
     return mass[:,None]*specificAngularMomentum(pos,vel,coordinates=coordinates)
+
+
+### TEMPERATURE
+def meanMolecularWeight(Xh=0.76,ne=None):
+    """
+    PURPOSE: compute mean molecular weight
+    INPUTS:  Xh = hydrogen fraction
+             Ne = electron abundance from gadget output
+    """
+
+    Yh=(1-Xh)/(4*Xh) #helium fraction
+    
+    if ne is None: #adiabatic case
+        mu=(1.+4 *Yh) / (1.+3.*Yh+ 1)
+    else: #radiative cooling case
+        mu = (1+4*Yh)/(1+Yh+ne)
+
+    return mu
+
+
+def temperature(u,mu):
+    """
+    PURPOSE : convert internal energy per unit mass in cgs to temperature in K
+    INPUTS : u = specific internal energy in cgs
+             mu = mean molecular weight (must be same dimension than u)
+             ne = electron abundance
+    OUTPUTS : temp = temperature in K
+    """
+    from constants import *
+
+    u2temp=mu*PROTON_MASS*(ADIABATIC_INDEX-1)/BOLTZMANN_CONSTANT #total factor
+    return u2temp*u
+
