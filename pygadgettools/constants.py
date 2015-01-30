@@ -9,7 +9,7 @@ SOLAR_MASS             = 1.9891e33
 BOLTZMANN_CONSTANT     = 1.380658e-16
 PROTON_MASS            = 1.6726231e-24;  
 GRAVITATIONAL_CONSTANT = 6.67259e-8 
-
+ADIABATIC_INDEX        = 5./3.
 
 
 ## Gadget Units
