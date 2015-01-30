@@ -4,8 +4,8 @@
 import numpy as np
 
 ## Universal constants
-PARSEC                 = 3.08567758e16
-SOLAR_MASS             = 1.9891e30
+PARSEC                 = 3.08567758e18 #in cm
+SOLAR_MASS             = 1.9891e33
 BOLTZMANN_CONSTANT     = 1.380658e-16
 PROTON_MASS            = 1.6726231e-24;  
 GRAVITATIONAL_CONSTANT = 6.67259e-8 
