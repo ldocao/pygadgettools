@@ -62,3 +62,59 @@ def min(x,q,radius):
         xx=xx[np.logical_not(sublist)]
                          
     return meanq
+
+
+def nShell(x,bins):
+    '''
+    PURPOSE : gives number of particles inside each bin
+    INPUT : x = position
+            bins = bin limits
+    OUTPUTS : nshell = number of particles within each bin
+    '''
+        
+    #copy original values
+    xx=np.copy(x)
+    nr=len(bins)-1 #number of intervals 
+    nshell=np.zeros(nr)
+    for i in range(0,nr):
+        sublist   = (xx>=bins[i]) & (xx<bins[i+1])
+        nshell[i] = np.count_nonzero(sublist)
+        xx        = xx[np.logical_not(sublist)] #remove from the list already used data (for speedup)
+
+    return nshell
+
+
+def massPerShell(x,mass,bins):
+    '''
+    PURPOSE: computes the total mass enclosed in each bin
+    INPUTS : x = position
+             mass = mass of particles
+             bins = bin limits
+    OUTPUTS: mass per shell
+    '''
+
+    xx=np.copy(x)
+    mm=np.copy(mass)
+    nr=len(bins)-1 #number of intervals 
+    mass_bin=np.zeros(nr) #mass in each bin
+    for i in range(0,nr):
+        sublist   = (xx>=bins[i]) & (xx<bins[i+1])
+        mass_bin[i] = np.sum(mm[sublist])
+        xx        = xx[np.logical_not(sublist)] #remove from the list already used data (for speedup)
+        mm        = mm[np.logical_not(sublist)] #remove from the list already used data (for speedup)
+
+    return mass_shell
+
+
+def enclosed_mass(x,mass,bins):
+    '''
+    PURPOSE: compute the enclosed mass along an axis
+    INPUTS : x = position 
+             mass = mass of particles
+             bins = bin limits
+    '''
+
+    mass_shell=massPerShell(x,mass,bins) #compute mass in each shell
+    total_mass=np.cumsum(mass_shell,dtype='float64')
+    return total_mass
+

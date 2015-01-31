@@ -31,3 +31,23 @@ def midPoint(x):
     return >> array([ 0.05,  0.15,  0.25,  0.35,  0.45,  0.55,  0.65,  0.75,  0.85])
     """
     return (x[1:] + x[:-1]) / 2
+
+
+def nshell(x,bins):
+    '''
+    PURPOSE : gives number of particles inside each bin
+    INPUT : x = position
+            bins = bin limits
+    OUTPUTS : nshell = number of particles within each bin
+    '''
+        
+    #copy original values
+    xx=np.copy(x)
+    nr=len(bins)-1 #number of intervals 
+    nshell=np.zeros(nr)
+    for i in range(0,nr):
+        sublist   = (xx>=bins[i]) & (xx<bins[i+1])
+        nshell[i] = np.count_nonzero(sublist)
+        xx        = xx[np.logical_not(sublist)] #remove from the list already used data (for speedup)
+
+    return nshell
