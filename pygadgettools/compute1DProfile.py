@@ -103,10 +103,10 @@ def massPerShell(x,mass,bins):
         xx        = xx[np.logical_not(sublist)] #remove from the list already used data (for speedup)
         mm        = mm[np.logical_not(sublist)] #remove from the list already used data (for speedup)
 
-    return mass_shell
+    return mass_bin
 
 
-def enclosed_mass(x,mass,bins):
+def enclosedMass(x,mass,bins):
     '''
     PURPOSE: compute the enclosed mass along an axis
     INPUTS : x = position 
@@ -118,3 +118,17 @@ def enclosed_mass(x,mass,bins):
     total_mass=np.cumsum(mass_shell,dtype='float64')
     return total_mass
 
+
+
+def sphericalDensityDM(r,mass,radius):
+    """
+    PURPOSE: compute 1D spherical density of DM
+    INPUTS: r = radial position
+            mass = mass of particles
+            radius = radius along which you want the profile
+    """
+
+    coradius=createGrid.gridAround(radius)
+    mass_per_shell=massPerShell(r,mass,coradius)
+    volume_per_shell=createGrid.volumePerShell(coradius)
+    return mass_per_shell/volume_per_shell
