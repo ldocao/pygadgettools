@@ -12,6 +12,19 @@ Date of creation : 27th January 2015
 
 
 
+### pygadgettools
+You will find various functions to make simple analysis of gadget data. We assume that you use pygadgetreader from R. Thompson
+
+
+### scripts
+You will find some scripts mainly using YT adapted to Gadget
+
+
+
+
+
+
+
 If you would like to improve, please use the following conventions (from http://en.wikipedia.org/wiki/Naming_convention_(programming)) :
 
 * Classes: Class names should be nouns in UpperCamelCase, with the first letter of every word capitalised. Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML). 
