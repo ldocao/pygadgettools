@@ -10,9 +10,9 @@ import pdb
 
 
 
-snap="/home/ldcao/Documents/GIZMO/run/L005_1/output/snapshot_000" #snapshot name
-bbox=[[-3100,3100],[-3100,3100],[-3100,3100]] #boundary of your simulation
-ds=yt.load(snap+".hdf5", unit_base={'length':('pc',1.0)}, bounding_box=bbox) #add .hdf5 if needed
+snap="/home/ldcao/Documents/GIZMO/run/L005_256_2/output/snapshot_000" #snapshot name
+bbox=[[-3,3],[-3,3],[-3,3]] #boundary of your simulation
+ds=yt.load(snap+".hdf5", unit_base={'length':('kpc',1.0)}, bounding_box=bbox) #add .hdf5 if needed
 
 
 #find max density peak
