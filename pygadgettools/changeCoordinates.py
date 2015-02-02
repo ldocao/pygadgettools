@@ -3,7 +3,7 @@
 
 
 import numpy as np
-import warnings,sys
+import warnings,sys,pdb
 
 
 
@@ -26,13 +26,9 @@ def position_cartesian2spherical(pos):
 
     #define theta and take care of r=0 case
     theta=np.zeros(np.size(x))
-    ind_zero=np.where(r == 0.) #is there any point where radius is 0 ?
-    ind_nozero=np.where(r !=0) 
-    if np.size(ind_zero) == 0:
-        theta=np.arccos(z/r)        
-    else:
-        theta[ind_nozero]= np.arccos(z[ind_nozero]/r[ind_nozero])        
-        theta[ind_zero]=0.
+    ind_zero=(r == 0.) #is there any point where radius is 0 ?
+    theta= np.arccos(z/r)        
+    theta[ind_zero]=0.
 
     phi=np.arctan2(y,x)
 
@@ -198,16 +194,15 @@ def velocity_cartesian2spherical(pos,vel):
 
 
     #compute spherical velocities
-    if r==0:
+    vr = vx*np.sin(theta)*np.cos(phi) + vy*np.sin(theta)*np.sin(phi) + vz*np.cos(theta)
+    vtheta = vx*np.cos(theta)*np.cos(phi) + vy*np.cos(theta)*np.sin(phi) - vz*np.sin(theta)
+    vphi = -vx*np.sin(phi) + vy*np.cos(phi)
+
+    if np.sum(r==0)!=0: #if some points are at the origin
         warnings.warn("Spherical velocity is not defined at origin. Returning 0.")
-        vr=0
-        vtheta=0
-        vphi=0
-    else:
-        vr = vx*np.sin(theta)*np.cos(phi) + vy*np.sin(theta)*np.sin(phi) + vz*np.cos(theta)
-        vtheta = vx*np.cos(theta)*np.cos(phi) + vy*np.cos(theta)*np.sin(phi) - vz*np.sin(theta)
-        vphi = -vx*np.sin(phi) + vy*np.cos(phi)
-        
+        vr[r==0]=0
+        vtheta[r==0]=0
+        vphi[r==0]=0
 
 
     return np.dstack((vr,vtheta,vphi))[0]
