@@ -14,7 +14,7 @@ SECONDS_IN_YEAR        = 3600.*24.*365.25
 
 
 ## Gadget Units
-UnitLength   = 3.085678e21; #             Kpc --> cm
+UnitLength   = 3.085678e18; #             Kpc --> cm
 UnitMass     = 1.989e43;    # M_solar * 10^10 --> grams
 UnitVelocity = 1.0e5;       #            km/s --> cm/s
 UnitTime     = UnitLength/UnitVelocity; #Seconds
