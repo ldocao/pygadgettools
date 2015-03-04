@@ -16,7 +16,8 @@ class Header:
     Comments
     --------
 
-    Please note that NumPart_Total_HW, nor Flag_Entropy_ICs are defined in header. Need to be implemented
+    (1) Please note that NumPart_Total_HW, nor Flag_Entropy_ICs are defined in header. Need to be implemented
+    (2) Naming conventions follows users-guide.pdf of Gadget-2 for attribute names
     
     """
     
@@ -79,73 +80,87 @@ class Body:
         Timestep of particles enable in Makefile ?
 
         
+    Comments:
+    --------
+
+    (1) For the moment, all boolean optional keywords are useless.
     """
 
     def __init__(self, npart,
-           rho, ne, nh, hsml,
-           acce, endt, tstp):
+           rho=False, ne=False, nh=False, hsml=False,
+           acce=False, endt=False, tstp=False):
 
         total_number_of_particles = np.sum(npart,dtype="float64")
         gas_particles=npart[0] #number of gas particles
 
-        self.pos = np.zeros([total_number_of_particles,3]) #Positions
-        self.vel = np.zeros([total_number_of_particles,3]) #Velocities
-        self.id  = np.zeros(total_number_of_particles)     #Particle ID's
-        self.mass =  np.zeros(total_number_of_particles)   #Masses
-        self.u =  np.zeros(gas_particles)                  #Internal energy per unit mass
+        if total_number_of_particles != 0. :
+            self.pos = np.zeros([total_number_of_particles,3]) #Positions
+            self.vel = np.zeros([total_number_of_particles,3]) #Velocities
+            self.id  = np.zeros(total_number_of_particles)     #Particle ID's
+            self.mass =  np.zeros(total_number_of_particles)   #Masses
+        else:
+            print "There are no particles !"
+            sys.exit()
 
-        ##initialize only if enable in makefile to save memory. Maybe there is a smarter way to do that. But the idea is that if you need for example acce, you need all the blocks before.
-        if tstp:
-            rho = True
-            ne = True
-            nh = True
-            hsml = True
-            pot = True
-            acce = True
-            endt = True
-            self.tstp =np.zeros(total_number_of_particles)
+        if gas_particles != 0:
+            self.u =  np.zeros(gas_particles)                  #Internal energy per unit mass
 
-        if endt:
-            rho = True
-            ne = True
-            nh = True
-            hsml = True
-            pot = True
-            acce = True
-            self.endt =np.zeros(gas_particles)
 
-        if acce:
-            rho = True
-            ne = True
-            nh = True
-            hsml = True
-            pot = True
-            self.acce =np.zeros(total_number_of_particles)
 
-        if pot:
-            rho = True
-            ne = True
-            nh = True
-            hsml = True
-            self.pot = np.zeros(total_number_of_particles)            
 
-        if hsml:
-            rho = True
-            ne = True
-            nh = True
-            self.hsml =np.zeros(gas_particles) #SPH Smoothing Length
 
-        if nh:
-            rho = True
-            ne = True
-            self.nh = np.zeros(gas_particles) #Hydrogen Abundance
+        # ##initialize only if enable in makefile to save memory. Maybe there is a smarter way to do that. But the idea is that if you need for example acce, you need all the blocks before. Need to be implemented
+        # if tstp:
+        #     rho = True
+        #     ne = True
+        #     nh = True
+        #     hsml = True
+        #     pot = True
+        #     acce = True
+        #     endt = True
+        #     self.tstp =np.zeros(total_number_of_particles)
 
-        if ne:
-            rho = True
-            self.ne = np.zeros(gas_particles) #Electron Abundance
+        # if endt:
+        #     rho = True
+        #     ne = True
+        #     nh = True
+        #     hsml = True
+        #     pot = True
+        #     acce = True
+        #     self.endt =np.zeros(gas_particles)
 
-        if rho:
-            self.rho =np.zeros(gas_particles) #Density
+        # if acce:
+        #     rho = True
+        #     ne = True
+        #     nh = True
+        #     hsml = True
+        #     pot = True
+        #     self.acce =np.zeros(total_number_of_particles)
+
+        # if pot:
+        #     rho = True
+        #     ne = True
+        #     nh = True
+        #     hsml = True
+        #     self.pot = np.zeros(total_number_of_particles)            
+
+        # if hsml:
+        #     rho = True
+        #     ne = True
+        #     nh = True
+        #     self.hsml =np.zeros(gas_particles) #SPH Smoothing Length
+
+        # if nh:
+        #     rho = True
+        #     ne = True
+        #     self.nh = np.zeros(gas_particles) #Hydrogen Abundance
+
+        # if ne:
+        #     rho = True
+        #     self.ne = np.zeros(gas_particles) #Electron Abundance
+
+        # if rho:
+        #     self.rho =np.zeros(gas_particles) #Density
 
 
 
@@ -158,8 +173,6 @@ class Body:
 #     check=True
 
 #     return check
-
-
 
 
 # def check_header(header):
@@ -178,19 +191,19 @@ class Body:
 
 
 
-def write_header(header, icfile,format=1):
+def write_header(Header, IcFile,format_output=1):
     """Write the header into a specified already open file
 
     Parameters
     ----------
 
-    header : object
-       see Class structure defined in this file
+    Header : object
+       see Class Header defined in this file
 
-    icfile : ??
+    IcFile : object
        file identifier when opening file in python
 
-    format : integer
+    format_output : integer
        format of desired initial condition (1:binary, 3:hdf5). Only binary 1 is implemented
 
     Comments
@@ -203,50 +216,50 @@ def write_header(header, icfile,format=1):
     #* Note that we use struct.pack to form a block, whereas we have to use tostring() on a non-block *#
     #write header into file
     print "Writing header (little endian)..."
-    icfile.write(struct.pack('<I',256))                             #dummy
-    icfile.write(struct.pack('<6I',
-                             header.NumPart_ThisFile[0],
-                             header.NumPart_ThisFile[1],
-                             header.NumPart_ThisFile[2],
-                             header.NumPart_ThisFile[3],
-                             header.NumPart_ThisFile[4],
-                             header.NumPart_ThisFile[5]))
-    icfile.write(struct.pack('<6d',
-                             header.MassTable[0],
-                             header.MassTable[1],
-                             header.MassTable[2],
-                             header.MassTable[3],
-                             header.MassTable[4],
-                             header.MassTable[5]))
-    icfile.write(struct.pack('<d',header.Time))                            #a
-    icfile.write(struct.pack('<d',header.Redshift))                        #z
-    icfile.write(struct.pack('<i',header.Flag_Sfr))                         #sfrFlag
-    icfile.write(struct.pack('<i',header.Flag_Feedback))                          #FBFlag
-    icfile.write(struct.pack('<6I',
-                             header.NumPart_Total[0],
-                             header.NumPart_Total[1],
-                             header.NumPart_Total[2],
-                             header.NumPart_Total[3],
-                             header.NumPart_Total[4],
-                             header.NumPart_Total[5]))
-    icfile.write(struct.pack('<i',header.Flag_Cooling))                     #coolingFlag    
-    icfile.write(struct.pack('<i',header.NumFilesPerSnapshot))                               #numfiles
-    icfile.write(struct.pack('<d',header.BoxSize))                              #boxsize
-    icfile.write(struct.pack('<d',header.Omega0))                              #Omega_0
-    icfile.write(struct.pack('<d',header.OmegaLambda))                              #Omega_Lambda
-    icfile.write(struct.pack('<d',header.HubbleParam))                               #HubbleParam
-    icfile.write(struct.pack('<i',header.Flag_StellarAge))
-    icfile.write(struct.pack('<i',header.Flag_Metals))
+    IcFile.write(struct.pack('<I',256))                             #dummy
+    IcFile.write(struct.pack('<6I',
+                             Header.NumPart_ThisFile[0],
+                             Header.NumPart_ThisFile[1],
+                             Header.NumPart_ThisFile[2],
+                             Header.NumPart_ThisFile[3],
+                             Header.NumPart_ThisFile[4],
+                             Header.NumPart_ThisFile[5]))
+    IcFile.write(struct.pack('<6d',
+                             Header.MassTable[0],
+                             Header.MassTable[1],
+                             Header.MassTable[2],
+                             Header.MassTable[3],
+                             Header.MassTable[4],
+                             Header.MassTable[5]))
+    IcFile.write(struct.pack('<d',Header.Time))                            #a
+    IcFile.write(struct.pack('<d',Header.Redshift))                        #z
+    IcFile.write(struct.pack('<i',Header.Flag_Sfr))                         #sfrFlag
+    IcFile.write(struct.pack('<i',Header.Flag_Feedback))                          #FBFlag
+    IcFile.write(struct.pack('<6I',
+                             Header.NumPart_Total[0],
+                             Header.NumPart_Total[1],
+                             Header.NumPart_Total[2],
+                             Header.NumPart_Total[3],
+                             Header.NumPart_Total[4],
+                             Header.NumPart_Total[5]))
+    IcFile.write(struct.pack('<i',Header.Flag_Cooling))                     #coolingFlag    
+    IcFile.write(struct.pack('<i',Header.NumFilesPerSnapshot))                               #numfiles
+    IcFile.write(struct.pack('<d',Header.BoxSize))                              #boxsize
+    IcFile.write(struct.pack('<d',Header.Omega0))                              #Omega_0
+    IcFile.write(struct.pack('<d',Header.OmegaLambda))                              #Omega_Lambda
+    IcFile.write(struct.pack('<d',Header.HubbleParam))                               #HubbleParam
+    IcFile.write(struct.pack('<i',Header.Flag_StellarAge))
+    IcFile.write(struct.pack('<i',Header.Flag_Metals))
     ##should add here NumPart_Total_HW. not implemented yet, nor Flag Entropy
 
 
     ##fill in empty space
-    header_bytes_left = 260 - icfile.tell()
+    header_bytes_left = 260 - IcFile.tell()
     for j in range(header_bytes_left):
-        icfile.write(struct.pack('<x'))
-    icfile.write(struct.pack('<I',256))
-    if icfile.tell()-8 != 256:
-        print('ERROR!  output header = %d' % icfile.tell()-8)
+        IcFile.write(struct.pack('<x'))
+    IcFile.write(struct.pack('<I',256))
+    if IcFile.tell()-8 != 256:
+        print('ERROR!  output header = %d' % IcFile.tell()-8)
         sys.exit()
 
     return None
@@ -256,60 +269,66 @@ def write_header(header, icfile,format=1):
 
 
 
-# def write_body(body, icfile):
-#     """Write the body of initial condition file in a already open specified file
+def write_body(Body, IcFile, format_output):
+    """Write the body of initial condition file in a already open specified file
+
+    Parameters
+    ----------
+
+    Body : object
+       see Class Body defined in this file
+
+    IcFile : object
+       file identifier when opening file in python
+
+    format_output : integer
+       format of desired initial condition (1:binary, 3:hdf5). Only binary 1 is implemented
+
+    """
 
 
-#     """
-#     #### WRITE DATA
-#     print "Writing data (little endian)..."
+    def write_block(block, nbytes, IcFile):
+        """Write a block from the body structure
 
-#     #convert to correct variable type
-#     POS    = POS.astype('f')
-#     VEL    = VEL.astype('f')
-#     PID    = PID.astype('I')
-#     MASSES = MASSES.astype('f') #variable particle mass (not needed if massarr is defined)
-#     U      = U.astype('f')
-#     RHO    = RHO.astype('f')
-#     HSML   = HSML.astype('f')
+        Parameters
+        ----------
+        
+        block : float array
+           The data block to be written.
+
+        nbytes : float
+           Size of the block
+
+        IcFile ; Object
+           File identifier to write in
+            
+        """
+
+        IcFile.write(struct.pack('<I',nbytes)) #dimensions*number of particles
+        IcFile.write(block.tostring())
+        IcFile.write(struct.pack('<I',nbytes))
+
+        return None
+
+    total_number_of_particles = length(Body.pos[:,0])
+    gas_particles = length(Body.u)
 
     
-#     #write in binary format
-#     icfile.write(struct.pack('<I',3*4*sumnpart)) #dimensions*number of particles
-#     icfile.write(POS.tostring())
-#     icfile.write(struct.pack('<I',3*4*sumnpart))
+    #write in binary format
+    write_block(Body.pos.astype('f'), 3*4*total_number_of_particles, IcFile)
+    write_block(Body.pvel.astype('f'), 3*4*total_number_of_particles, IcFile)
+    write_block(Body.id.astype('I'), 4*total_number_of_particles, IcFile)
+    write_block(Body.mass.astype('f'), 4*total_number_of_particles, IcFile)
+    write_block(Body.u.astype('f'), 4*gas_particles, IcFile)
 
-#     #write velocity
-#     icfile.write(struct.pack('<I',3*4*sumnpart))
-#     icfile.write(VEL.tostring())
-#     icfile.write(struct.pack('<I',3*4*sumnpart))
 
-#     #write particles ID
-#     icfile.write(struct.pack('<I',4*sumnpart))
-#     icfile.write(PID.tostring())
-#     icfile.write(struct.pack('<I',4*sumnpart))
-
-#     #write variables mass particles
-#     icfile.write(struct.pack('<I',4*sumnpart))
-#     icfile.write(MASSES.tostring())
-#     icfile.write(struct.pack('<I',4*sumnpart))
+    # ##need to set conditions to write these blocks. Maybe it's better to do a loop over each block, but it need some more work.
+    # write_block(Body.rho.astype('f'), 4*gas_particles, IcFile)
+    # write_block(Body.ne.astype('f'), 4*gas_particles, IcFile)
+    # write_block(Body.nh.astype('f'), 4*gas_particles, IcFile)
+    # write_block(Body.hsml.astype('f'), 4*gas_particles, IcFile)
     
-#     #write energy
-#     icfile.write(struct.pack('<I',4*npart_total[0]))
-#     icfile.write(U.tostring())
-#     icfile.write(struct.pack('<I',4*npart_total[0]))
-
-#     #write density
-#     icfile.write(struct.pack('<I',4*npart_total[0]))
-#     icfile.write(RHO.tostring())
-#     icfile.write(struct.pack('<I',4*npart_total[0]))
-
-#     # #write smoothing length
-#     # icfile.write(struct.pack('<I',4*npart_total[0]))
-#     # icfile.write(HSML.tostring())
-#     # icfile.write(struct.pack('<I',4*npart_total[0]))
-
-#     return None
+    return None
 
 
 
@@ -329,38 +348,47 @@ def print_summary(header,body):
 
     return None
 
-def dump_ic(header, body, destination_file="ic.dat", format=1):
+
+
+
+
+
+
+
+
+
+def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
     """Generates output initial condition file for Gadget
 
 
     Parameters
     ----------
-    header : object
+    Header : object
         header for snapshot
-    body : object
+    Body : object
         body of snapshot (POS,VEL,MASS, etc.)
     destination_file : string
         output file name
-    format : integer
-        define output format as defined in Gadget-2
+    format_output : integer
+        define output format as defined in Gadget-2. Only Binary 1 supported for now.
     """
 
 
     ##create ic_file
     if not check_if_file_exists(destination_file):
-        icfile=open(destination_file,'w')
+        IcFile=open(destination_file,'w')
 
     ##run some sanity checks
-    check_header(header)
-    check_body(body)
+    check_header(Header)
+    check_body(Body)
 
     ##write the data
-    write_header(header,icfile)
-    write_body(body,icfile)
+    write_header(Header,IcFile,format_output)
+    write_body(Body,IcFile,format_output)
 
     ##finally close file and return
-    print_summary(header,body)
-    icfile.close()        
+    print_summary(Header,Body)
+    IcFile.close()        
     return None
 
 
