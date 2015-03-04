@@ -335,13 +335,13 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
     Parameters
     ----------
     Header : object
-        header for snapshot
+        Header for snapshot.
     Body : object
-        body of snapshot (POS,VEL,MASS, etc.)
+        Body of snapshot (POS,VEL,MASS, etc.)
     destination_file : string
-        output file name
+        Full path of the output file name.
     format_output : integer
-        define output format as defined in Gadget-2. Only Binary 1 supported for now.
+        Define output format as defined in Gadget-2. Only Binary 1 supported for now.
 
       
 
