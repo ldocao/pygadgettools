@@ -96,6 +96,7 @@ class Body:
            rho=False, ne=False, nh=False, hsml=False,
            acce=False, endt=False, tstp=False):
 
+        npart=np.array(npart) #make sure it is a numpy array
         total_number_of_particles = np.sum(npart,dtype="float64")
         gas_particles=npart[0] #number of gas particles
 
@@ -105,8 +106,7 @@ class Body:
             self.id  = np.zeros(total_number_of_particles)     #Particle ID's
             self.mass =  np.zeros(total_number_of_particles)   #Masses
         else:
-            print "There are no particles !"
-            sys.exit()
+            raise ValueError, "There are no particles !"
 
         if gas_particles != 0:
             self.u =  np.zeros(gas_particles)                  #Internal energy per unit mass
@@ -244,8 +244,8 @@ def write_header(Header, IcFile,format_output=1):
         IcFile.write(struct.pack('<x'))
     IcFile.write(struct.pack('<I',256))
     if IcFile.tell()-8 != 256:
-        print('ERROR!  output header = %d' % IcFile.tell()-8)
-        sys.exit()
+        raise IOError, "Header has wrong format"
+
 
     return None
 
@@ -344,10 +344,6 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
         Define output format as defined in Gadget-2. Only Binary 1 supported for now.
 
       
-
-    Comments
-    --------
-    (1) sanity check and summary currently not implemented
     """
 
 
