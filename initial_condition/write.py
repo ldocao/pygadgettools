@@ -1,6 +1,9 @@
 import numpy as np
 import os
 import sys
+import struct
+from check import *
+
 
 
 
@@ -21,6 +24,9 @@ class Header:
     
     """
     
+    ##A possible improvement would be to freeze the attribute structure. Maybe we can start by looking at  http://stackoverflow.com/questions/3603502/prevent-creating-new-attributes-outside-init
+
+
     ##naming use HDF5 identifier
     def __init__(self):
         self.NumPart_ThisFile    = np.zeros(6) #number of particles of each type in present file
@@ -192,10 +198,9 @@ def write_header(Header, IcFile,format_output=1):
     Please note that NumPart_Total_HW, nor Flag_Entropy_ICs will be written to the header. Need to be implemented
     """
 
-    
+    print "Writing header (little endian)"
     #* Note that we use struct.pack to form a block, whereas we have to use tostring() on a non-block *#
     #write header into file
-    print "Writing header (little endian)..."
     IcFile.write(struct.pack('<I',256))                             #dummy
     IcFile.write(struct.pack('<6I',
                              Header.NumPart_ThisFile[0],
@@ -266,6 +271,7 @@ def write_body(Body, IcFile, format_output):
 
     """
 
+    print "Writing body (little endian)"
 
     def write_block(block, nbytes, IcFile):
         """Write a block from the body structure
@@ -290,13 +296,13 @@ def write_body(Body, IcFile, format_output):
 
         return None
 
-    total_number_of_particles = length(Body.pos[:,0])
-    gas_particles = length(Body.u)
+    total_number_of_particles = np.size(Body.pos[:,0])
+    gas_particles = np.size(Body.u)
 
     
     #write in binary format
     write_block(Body.pos.astype('f'), 3*4*total_number_of_particles, IcFile)
-    write_block(Body.pvel.astype('f'), 3*4*total_number_of_particles, IcFile)
+    write_block(Body.vel.astype('f'), 3*4*total_number_of_particles, IcFile)
     write_block(Body.id.astype('I'), 4*total_number_of_particles, IcFile)
     write_block(Body.mass.astype('f'), 4*total_number_of_particles, IcFile)
     write_block(Body.u.astype('f'), 4*gas_particles, IcFile)
@@ -312,21 +318,6 @@ def write_body(Body, IcFile, format_output):
 
 
 
-
-def print_summary(header,body):
-    """Print a summary of the parameters
-    
-    Parameters
-    ----------
-    
-    header : class
-       see Header Class
-
-    body : class
-       see Body Class
-    """
-
-    return None
 
 
 
@@ -351,6 +342,12 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
         output file name
     format_output : integer
         define output format as defined in Gadget-2. Only Binary 1 supported for now.
+
+      
+
+    Comments
+    --------
+    (1) sanity check and summary currently not implemented
     """
 
 
@@ -358,15 +355,17 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
     if not check_if_file_exists(destination_file):
         IcFile=open(destination_file,'w')
 
-    ##run some sanity checks
+    ##run some sanity checks.
     check_header(Header)
     check_body(Body)
+    check_consistency(Header,Body)
 
     ##write the data
     write_header(Header,IcFile,format_output)
     write_body(Body,IcFile,format_output)
 
     ##finally close file and return
+    print "=== SUMMARY ==="
     print_summary(Header,Body)
     IcFile.close()        
     return None
@@ -377,45 +376,5 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
 
 
 
-
-
-
-
-    
-
-
-
-
-    
-
-
-# def read_header(filename):
-#     """
-#     PURPOSE : read header from initial condition file
-#     INPUTS : filename = name of file to read
-#     OUTPUTS : header = header structure defined in class header
-#     """
-
-#     f=open(filename,'rb')
-#     block=f.read(4)         ; dummy=struct.unpack('I',block)
-#     block=f.read(4*6)       ; header.npart=struct.unpack('6I',block)#read number of particles
-#     block=f.read(6*8)       ; header.mass=struct.unpack('6d',block) #read mass
-#     block=f.read(8)         ; header.time=struct.unpack('d',block)#read time
-#     block=f.read(8)         ; header.redshift=struct.unpack('d',block)#read redshift
-#     block=f.read(4)         ; header.flag_sfr=struct.unpack('i',block)       
-#     block=f.read(4)         ; header.flag_feedback=struct.unpack('i',block)  
-#     block=f.read(6*4)       ; header.npart_total=struct.unpack('6I',block)   
-#     block=f.read(4)         ; header.flag_cooling=struct.unpack('i',block)   
-#     block=f.read(4)         ; header.num_files=struct.unpack('i',block)      
-#     block=f.read(8)         ; header.BoxSize=struct.unpack('d',block)        
-#     block=f.read(8)         ; header.omega_zero=struct.unpack('d',block)     
-#     block=f.read(8)         ; header.omega_lambda=struct.unpack('d',block)   
-#     block=f.read(8)         ; header.hubbleparam=struct.unpack('d',block)    
-#     block=f.read(4)         ; header.flag_stellarage=struct.unpack('i',block)
-#     block=f.read(4)         ; header.flag_metals=struct.unpack('i',block)    
-
-#     f.close()
-
-#     return header
 
 
