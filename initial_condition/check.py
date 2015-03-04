@@ -15,7 +15,7 @@ def check_header(Header):
     """
     print "Checking header..."
     ##check if there are some particles
-    if (np.sum(Header.NumPart_ThisFile) == 0) or (Header.NumPart_Total == 0):
+    if (np.sum(Header.NumPart_ThisFile) == 0) or (np.sum(Header.NumPart_Total) == 0):
         print "No particles in header !"
         sys.exit()
 
