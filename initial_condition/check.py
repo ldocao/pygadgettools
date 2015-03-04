@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 def check_if_file_exists(filename):
     """Check if the file exists in the current directory
