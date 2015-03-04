@@ -1,37 +1,33 @@
 # pygadgettools
-Toolbox with python scripts and function for basic analysis of GADGET data. 
+Python toolbox for basic analysis of GADGET data. 
 
 
 
 Meant to be used within the Osaka University Theoretical Astrophysics Group lead by Kentaro Nagamine.
 
 Author : Long Do Cao
+
 Date of creation : 27th January 2015
 
 
 
+### REQUIREMENTS
+* numpy
+* pygadgetreader from R. Thompson
 
 
 ### pygadgettools
-You will find various functions to make simple analysis of gadget data. We assume that you use pygadgetreader from R. Thompson
+Package providing basic analysis for gadget data
 
 
 ### scripts
-You will find some scripts mainly using YT adapted to Gadget
-
+This directory contains some simple script to generate some 2D plots using YT, adapted to Gadget-2.
 
 
 ### initial_conditions
-This is a very simple initial condition tools for GADGET and/or GIZMO. write down initial condition in binary format 2.
+This directory contains some files to generate an initial condition file for Gadget-2 in binary format (format type=1 as defined in Gadget-2 user's guide). To use it, you need to have all the files in your working directory and follow the instructions below:
 
-
-
-If you would like to improve, please use the following conventions (from http://en.wikipedia.org/wiki/Naming_convention_(programming)) :
-
-* Classes: Class names should be nouns in UpperCamelCase, with the first letter of every word capitalised. Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML). 
-
-* Methods: Methods should be verbs in lowerCamelCase or a multi-word name that begins with a verb in lowercase; that is, with the first letter lowercase and the first letters of subsequent words in uppercase. 
-
-* Variables: Local variables, instance variables, and class variables are also written in lowerCamelCase. Variable names should not start with underscore (_) or dollar sign ($) characters, even though both are allowed. This is in contrast to other coding conventions that state that underscores should be used to prefix all instance variables.Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is, designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for temporary "throwaway" variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
-
-* Constants: Constants should be written in uppercase characters separated by underscores. Constant names may also contain digits if appropriate, but not as the first character.
+* insert "from write import *" at the beginning of your script
+* create a header. For example : my_header=Header()
+* create a body. For example : my_body=Body(npart) where npart is a 1D array containing the number of particles for each type
+* Fill in the information in my_header and my_body with the same dimensions than defined in the __init__ method of each class. Be careful ! There is no security check at this point. If you replace for example an array by a single float number, the code currently authorizes this operation, but the Gadget-2 code will crash.
