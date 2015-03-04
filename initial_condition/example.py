@@ -22,7 +22,7 @@ my_header.NumPart_Total = np.array(npart)
 my_body.pos[0,:]=np.array([0,0,0]) #the first particle will be at the center
 my_body.pos[1,:]=np.array([1,1,1])
 my_body.pos[2,:]=np.array([-1,0,1])
-my_body.id=np.arange(0,3)
+
 
 
 

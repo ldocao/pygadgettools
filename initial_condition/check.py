@@ -1,6 +1,29 @@
 import sys
 import numpy as np
 
+
+
+def check_dimension(x,dim):
+    """Check if x has dimension dim
+    
+    Parameters
+    ----------
+    
+    x : array
+       array to be tested
+    dim : array
+       required dimensions
+    
+    """
+
+    if np.shape(x) != dim:
+        raise Exception, "Unexpected dimensions"
+    
+    return None
+
+
+
+
 def check_if_file_exists(filename):
     """Check if the file exists in the current directory
 
@@ -28,11 +51,14 @@ def check_header(Header):
         raise ValueError, "NumFilesPerSnapshot is less or equal 0"
 
     ##check if number of particles have good dimensions
-    if (np.shape(Header.NumPart_ThisFile) != (6,)) or (np.shape(Header.NumPart_Total) != (6,)) or (np.shape(Header.MassTable) != (6,)):
-        raise Exception, "Particle numbers or MassTable has incorrect dimensions"
-
+    check_dimension(Header.NumPart_ThisFile, (6,))
+    check_dimension(Header.NumPart_Total, (6,))
+    check_dimension(Header.MassTable, (6,))
+    
 
     return None
+
+
 
 def check_body(Body):
     """Run a series of tests to check the body
@@ -62,23 +88,6 @@ def check_consistency(Header, Body):
         see Class Body
     """
 
-    def check_dimension(x,dim):
-        """Check if x has dimension dim
-
-        Parameters
-        ----------
-        
-        x : array
-           array to be tested
-        dim : array
-           required dimensions
-
-        """
-
-        if np.shape(x) != dim:
-            raise Exception, "Incompatible dimensions with header"
-
-        return None
 
     ##check dimensions
     npart=Header.NumPart_ThisFile #assume there is only one file
