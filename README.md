@@ -21,7 +21,8 @@ You will find some scripts mainly using YT adapted to Gadget
 
 
 
-
+### initial_conditions
+This is a very simple initial condition tools for GADGET and/or GIZMO. write down initial condition in binary format 2.
 
 
 
