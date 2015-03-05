@@ -32,42 +32,42 @@ def check_if_file_exists(filename):
     return None
 
 
-def check_header(Header):
+def check_header(header):
     """Run a series of tests to check the header
 
     """
     print "Checking header..."
 
     ##check if there are some particles
-    if (np.sum(Header.NumPart_ThisFile) == 0) or (np.sum(Header.NumPart_Total) == 0):
+    if (np.sum(header.NumPart_ThisFile) == 0) or (np.sum(header.NumPart_Total) == 0):
         raise ValueError,"No particles in header !"
 
     ##check if mass are positive
-    if np.any(Header.MassTable < 0):
+    if np.any(header.MassTable < 0):
         raise ValueError, "MassTable contains negative values"
 
     ##check if NumFilesPerSnapshot is positive
-    if Header.NumFilesPerSnapshot <= 0:
+    if header.NumFilesPerSnapshot <= 0:
         raise ValueError, "NumFilesPerSnapshot is less or equal 0"
 
     ##check if number of particles have good dimensions
-    check_dimension(Header.NumPart_ThisFile, (6,))
-    check_dimension(Header.NumPart_Total, (6,))
-    check_dimension(Header.MassTable, (6,))
+    check_dimension(header.NumPart_ThisFile, (6,))
+    check_dimension(header.NumPart_Total, (6,))
+    check_dimension(header.MassTable, (6,))
     
 
     return None
 
 
 
-def check_body(Body):
+def check_body(body):
     """Run a series of tests to check the body
     
 
     Parameters
     ----------
 
-    Body : Object
+    body : Object
        see Class Object
     """
     
@@ -75,36 +75,36 @@ def check_body(Body):
 
 
 
-def check_consistency(Header, Body):
+def check_consistency(header, body):
     """Run a series of test to check consistency between body and header
 
     Parameters
     ----------
     
-    Header : object
+    header : object
         see Class Header
         
-    Body : object
+    body : object
         see Class Body
     """
 
 
     ##check dimensions
-    npart=Header.NumPart_ThisFile #assume there is only one file
+    npart=header.NumPart_ThisFile #assume there is only one file
     gas_particles=npart[0]
     total_number_of_particles=np.sum(npart,dtype="float64")
 
-    check_dimension(Body.pos, (total_number_of_particles,3))
-    check_dimension(Body.vel, (total_number_of_particles,3))
-    check_dimension(Body.mass, (total_number_of_particles))
-    check_dimension(Body.id, (total_number_of_particles,))
+    check_dimension(body.pos, (total_number_of_particles,3))
+    check_dimension(body.vel, (total_number_of_particles,3))
+    check_dimension(body.mass, (total_number_of_particles))
+    check_dimension(body.id, (total_number_of_particles,))
     
     if gas_particles != 0:
-        check_dimension(Body.u, (gas_particles,))
+        check_dimension(body.u, (gas_particles,))
     
 
     ##check unicity of ID
-    if np.size(np.unique(Body.id)) !=  np.size(Body.id):
+    if np.size(np.unique(body.id)) !=  np.size(body.id):
         raise Exception, "IDs are not unique"
 
 
@@ -112,7 +112,7 @@ def check_consistency(Header, Body):
 
 
 
-def print_summary(Header,Body):
+def print_summary(header,body):
     """Print a summary of the parameters
     
     Parameters
@@ -128,7 +128,7 @@ def print_summary(Header,Body):
 
 
     ##print header attributes
-    pprint (vars(Header))
+    pprint (vars(header))
 
     ##print body summary
 

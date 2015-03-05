@@ -176,16 +176,16 @@ class Body:
 
 
 
-def write_header(Header, IcFile,format_output=1):
+def write_header(header, ic_file, format_output=1):
     """Write the header into a specified already open file
 
     Parameters
     ----------
 
-    Header : object
+    header : object
        see Class Header defined in this file
 
-    IcFile : object
+    ic_file : object
        file identifier when opening file in python
 
     format_output : integer
@@ -200,50 +200,50 @@ def write_header(Header, IcFile,format_output=1):
     print "Writing header (little endian)"
     #* Note that we use struct.pack to form a block, whereas we have to use tostring() on a non-block *#
     #write header into file
-    IcFile.write(struct.pack('<I',256))                             #dummy
-    IcFile.write(struct.pack('<6I',
-                             Header.NumPart_ThisFile[0],
-                             Header.NumPart_ThisFile[1],
-                             Header.NumPart_ThisFile[2],
-                             Header.NumPart_ThisFile[3],
-                             Header.NumPart_ThisFile[4],
-                             Header.NumPart_ThisFile[5]))
-    IcFile.write(struct.pack('<6d',
-                             Header.MassTable[0],
-                             Header.MassTable[1],
-                             Header.MassTable[2],
-                             Header.MassTable[3],
-                             Header.MassTable[4],
-                             Header.MassTable[5]))
-    IcFile.write(struct.pack('<d',Header.Time))                            #a
-    IcFile.write(struct.pack('<d',Header.Redshift))                        #z
-    IcFile.write(struct.pack('<i',Header.Flag_Sfr))                         #sfrFlag
-    IcFile.write(struct.pack('<i',Header.Flag_Feedback))                          #FBFlag
-    IcFile.write(struct.pack('<6I',
-                             Header.NumPart_Total[0],
-                             Header.NumPart_Total[1],
-                             Header.NumPart_Total[2],
-                             Header.NumPart_Total[3],
-                             Header.NumPart_Total[4],
-                             Header.NumPart_Total[5]))
-    IcFile.write(struct.pack('<i',Header.Flag_Cooling))                     #coolingFlag    
-    IcFile.write(struct.pack('<i',Header.NumFilesPerSnapshot))                               #numfiles
-    IcFile.write(struct.pack('<d',Header.BoxSize))                              #boxsize
-    IcFile.write(struct.pack('<d',Header.Omega0))                              #Omega_0
-    IcFile.write(struct.pack('<d',Header.OmegaLambda))                              #Omega_Lambda
-    IcFile.write(struct.pack('<d',Header.HubbleParam))                               #HubbleParam
-    IcFile.write(struct.pack('<i',Header.Flag_StellarAge))
-    IcFile.write(struct.pack('<i',Header.Flag_Metals))
+    ic_file.write(struct.pack('<I',256))                             #dummy
+    ic_file.write(struct.pack('<6I',
+                             header.NumPart_ThisFile[0],
+                             header.NumPart_ThisFile[1],
+                             header.NumPart_ThisFile[2],
+                             header.NumPart_ThisFile[3],
+                             header.NumPart_ThisFile[4],
+                             header.NumPart_ThisFile[5]))
+    ic_file.write(struct.pack('<6d',
+                             header.MassTable[0],
+                             header.MassTable[1],
+                             header.MassTable[2],
+                             header.MassTable[3],
+                             header.MassTable[4],
+                             header.MassTable[5]))
+    ic_file.write(struct.pack('<d',header.Time))                            #a
+    ic_file.write(struct.pack('<d',header.Redshift))                        #z
+    ic_file.write(struct.pack('<i',header.Flag_Sfr))                         #sfrFlag
+    ic_file.write(struct.pack('<i',header.Flag_Feedback))                          #FBFlag
+    ic_file.write(struct.pack('<6I',
+                             header.NumPart_Total[0],
+                             header.NumPart_Total[1],
+                             header.NumPart_Total[2],
+                             header.NumPart_Total[3],
+                             header.NumPart_Total[4],
+                             header.NumPart_Total[5]))
+    ic_file.write(struct.pack('<i',header.Flag_Cooling))                     #coolingFlag    
+    ic_file.write(struct.pack('<i',header.NumFilesPerSnapshot))                               #numfiles
+    ic_file.write(struct.pack('<d',header.BoxSize))                              #boxsize
+    ic_file.write(struct.pack('<d',header.Omega0))                              #Omega_0
+    ic_file.write(struct.pack('<d',header.OmegaLambda))                              #Omega_Lambda
+    ic_file.write(struct.pack('<d',header.HubbleParam))                               #HubbleParam
+    ic_file.write(struct.pack('<i',header.Flag_StellarAge))
+    ic_file.write(struct.pack('<i',header.Flag_Metals))
     ##should add here NumPart_Total_HW. not implemented yet, nor Flag Entropy
 
 
     ##fill in empty space
-    header_bytes_left = 260 - IcFile.tell()
+    header_bytes_left = 260 - ic_file.tell()
     for j in range(header_bytes_left):
-        IcFile.write(struct.pack('<x'))
-    IcFile.write(struct.pack('<I',256))
-    if IcFile.tell()-8 != 256:
-        raise IOError, "Header has wrong format"
+        ic_file.write(struct.pack('<x'))
+    ic_file.write(struct.pack('<I',256))
+    if ic_file.tell()-8 != 256:
+        raise IOError, "header has wrong format"
 
 
     return None
@@ -253,16 +253,16 @@ def write_header(Header, IcFile,format_output=1):
 
 
 
-def write_body(Body, IcFile, format_output):
+def write_body(body, ic_file, format_output):
     """Write the body of initial condition file in a already open specified file
 
     Parameters
     ----------
 
-    Body : object
+    body : object
        see Class Body defined in this file
 
-    IcFile : object
+    ic_file : object
        file identifier when opening file in python
 
     format_output : integer
@@ -272,7 +272,7 @@ def write_body(Body, IcFile, format_output):
 
     print "Writing body (little endian)"
 
-    def write_block(block, nbytes, IcFile):
+    def write_block(block, nbytes, ic_file):
         """Write a block from the body structure
 
         Parameters
@@ -284,34 +284,34 @@ def write_body(Body, IcFile, format_output):
         nbytes : float
            Size of the block
 
-        IcFile ; Object
+        ic_file ; Object
            File identifier to write in
             
         """
 
-        IcFile.write(struct.pack('<I',nbytes)) #dimensions*number of particles
-        IcFile.write(block.tostring())
-        IcFile.write(struct.pack('<I',nbytes))
+        ic_file.write(struct.pack('<I',nbytes)) #dimensions*number of particles
+        ic_file.write(block.tostring())
+        ic_file.write(struct.pack('<I',nbytes))
 
         return None
 
-    total_number_of_particles = np.size(Body.pos[:,0])
-    gas_particles = np.size(Body.u)
+    total_number_of_particles = np.size(body.pos[:,0])
+    gas_particles = np.size(body.u)
 
     
     #write in binary format
-    write_block(Body.pos.astype('f'), 3*4*total_number_of_particles, IcFile)
-    write_block(Body.vel.astype('f'), 3*4*total_number_of_particles, IcFile)
-    write_block(Body.id.astype('I'), 4*total_number_of_particles, IcFile)
-    write_block(Body.mass.astype('f'), 4*total_number_of_particles, IcFile)
-    write_block(Body.u.astype('f'), 4*gas_particles, IcFile)
+    write_block(body.pos.astype('f'), 3*4*total_number_of_particles, ic_file)
+    write_block(body.vel.astype('f'), 3*4*total_number_of_particles, ic_file)
+    write_block(body.id.astype('I'), 4*total_number_of_particles, ic_file)
+    write_block(body.mass.astype('f'), 4*total_number_of_particles, ic_file)
+    write_block(body.u.astype('f'), 4*gas_particles, ic_file)
 
 
     # ##need to set conditions to write these blocks. Maybe it's better to do a loop over each block, but it need some more work.
-    # write_block(Body.rho.astype('f'), 4*gas_particles, IcFile)
-    # write_block(Body.ne.astype('f'), 4*gas_particles, IcFile)
-    # write_block(Body.nh.astype('f'), 4*gas_particles, IcFile)
-    # write_block(Body.hsml.astype('f'), 4*gas_particles, IcFile)
+    # write_block(body.rho.astype('f'), 4*gas_particles, ic_file)
+    # write_block(body.ne.astype('f'), 4*gas_particles, ic_file)
+    # write_block(body.nh.astype('f'), 4*gas_particles, ic_file)
+    # write_block(body.hsml.astype('f'), 4*gas_particles, ic_file)
     
     return None
 
@@ -327,16 +327,16 @@ def write_body(Body, IcFile, format_output):
 
 
 
-def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
+def dump_ic(header, body, destination_file="ic.dat", format_output=1):
     """Generates output initial condition file for Gadget
 
 
     Parameters
     ----------
-    Header : object
-        Header for snapshot.
-    Body : object
-        Body of snapshot (POS,VEL,MASS, etc.)
+    header : object
+        header for snapshot.
+    body : object
+        body of snapshot (POS,VEL,MASS, etc.)
     destination_file : string
         Full path of the output file name.
     format_output : integer
@@ -348,21 +348,21 @@ def dump_ic(Header, Body, destination_file="ic.dat", format_output=1):
 
     ##create ic_file
     if not check_if_file_exists(destination_file):
-        IcFile=open(destination_file,'w')
+        ic_file=open(destination_file,'w')
 
     ##run some sanity checks.
-    check_header(Header)
-    check_body(Body)
-    check_consistency(Header,Body)
+    check_header(header)
+    check_body(body)
+    check_consistency(header,body)
 
     ##write the data
-    write_header(Header,IcFile,format_output)
-    write_body(Body,IcFile,format_output)
+    write_header(header,ic_file,format_output)
+    write_body(body,ic_file,format_output)
 
     ##finally close file and return
     print "=== SUMMARY ==="
-    print_summary(Header,Body)
-    IcFile.close()        
+    print_summary(header,body)
+    ic_file.close()        
     return None
 
 
