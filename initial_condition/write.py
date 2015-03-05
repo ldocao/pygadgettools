@@ -108,8 +108,7 @@ class Body:
         else:
             raise ValueError, "There are no particles !"
 
-        if gas_particles != 0:
-            self.u =  np.zeros(gas_particles)                  #Internal energy per unit mass
+        self.u =  np.zeros(gas_particles)                  #Internal energy per unit mass
 
 
 
