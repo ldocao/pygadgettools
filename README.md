@@ -10,7 +10,6 @@ Date of creation : 27th January 2015
 
 
 
-##last comments: test on new branch redesign
 
 
 ### REQUIREMENTS
