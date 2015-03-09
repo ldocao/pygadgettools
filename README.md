@@ -1,14 +1,16 @@
 # pygadgettools
 Python toolbox for basic analysis of GADGET data. 
 
-
-
-Meant to be used within the Osaka University Theoretical Astrophysics Group lead by Kentaro Nagamine.
-
 Author : Long Do Cao
 
 Date of creation : 27th January 2015
 
+
+
+
+
+
+##last comments: test on new branch redesign
 
 
 ### REQUIREMENTS
