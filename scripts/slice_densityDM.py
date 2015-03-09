@@ -16,9 +16,9 @@ ds=yt.load(snap+".hdf5", unit_base={'length':('pc',1.0)}, bounding_box=bbox) #ad
 
 
 
-slc=yt.SlicePlot(ds,'z',("deposit","PartType1_cic")) #define axis
+slc=yt.ProjectionPlot(ds,'z',("deposit","PartType1_cic")) #define axis
 slc.annotate_quiver(("deposit","PartType1_cic_velocity_x"),("deposit","PartType1_cic_velocity_y"),factor=16) #add velocity arrows
-slc.set_width(100,'pc')
+slc.set_width(1000,'pc')
 #slc.zoom(4) #do you want to zoom in ?                                                              #slc.set_zlim('PartType1_cic',3e-30,1e-28) #change colorbar range
 slc.save() #save to png file
 

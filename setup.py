@@ -7,5 +7,4 @@ setup(name='pygadgettools',
       author='Long DO CAO',
       author_email='ldocao@gmail.com',
       license='None',
-      packages=['pygadgettools'],
       zip_safe=False)
