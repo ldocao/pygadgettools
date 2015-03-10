@@ -1,8 +1,8 @@
 ### NAME: convert.py
 ### PURPOSE: convert units from Gadget Units (GU) to cgs
 
-import numpy as np
-from .constants import *
+
+from common import *
 
 
 def length(l):

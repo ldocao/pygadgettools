@@ -1,4 +1,4 @@
-### NAME: constants.py
+### NAME: common.py
 ### PURPOSE: define constants variables in cgs units.
 
 
