@@ -198,7 +198,7 @@ def temperature(u,mu):
          electron abundance
 
     """
-    from units.constants import *
+    from units.constants import PROTON_MASS, ADIABATIC_INDEX, BOLTZMANN_CONSTANT
 
     u2temp=mu*PROTON_MASS*(ADIABATIC_INDEX-1)/BOLTZMANN_CONSTANT #total factor
     return u2temp*u
