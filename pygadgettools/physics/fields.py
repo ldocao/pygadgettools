@@ -1,20 +1,25 @@
-###NAME: computePhysics.py
+###NAME: fields.py
 ###PURPOSE: compute some interesting physical quantities
 
 import numpy as np
-import pdb,sys
-import changeCoordinates
+
 
 
 ### ANGULAR MOMENTUM
-def specificAngularMomentum_cartesian(pos,vel):
-    """
-    PURPOSE : compute the value of specific angular momentum in gadget units
-    INPUTS : pos = cartesian coordinates in gadget format (from readsnap)
-             vel = cartesian velocity (must be same dimension than pos)
-             """
+def _specific_angular_momentum_cartesian(pos,vel):
+    """Compute the specific angular momentum in cartesian coordinates
 
-    #save cartesian position of each particle
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        cartesian coordinates in gadget format (from readsnap)
+
+    vel : float array [N,3]
+        cartesian velocity (must be same dimension than pos)
+   
+    """
     x=pos[:,0]
     y=pos[:,1]
     z=pos[:,2]
@@ -23,7 +28,6 @@ def specificAngularMomentum_cartesian(pos,vel):
     vy=vel[:,1]
     vz=vel[:,2]
     
-
     jx=(y*vz-z*vy)
     jy=(z*vx-vz*x)
     jz=(x*vy-vx*y)
@@ -31,11 +35,19 @@ def specificAngularMomentum_cartesian(pos,vel):
     return np.dstack((jx,jy,jz))[0]
 
 
-def specificAngularMomentum_cylindrical(pos,vel):
-    """
-    PURPOSE : compute the value of specific angular momentum in gadget units
-    INPUTS : pos = cartesian coordinates in gadget format (from readsnap)
-             vel = cartesian velocity (must be same dimension than pos)
+def _specific_angular_momentum_cylindrical(pos,vel):
+    """Compute the specific angular momentum in cylindrical coordinates
+
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        cylindrical coordinates in gadget format (from readsnap)
+
+    vel : float array [N,3]
+        cyindrical velocity (must be same dimension than pos)
+   
     """
 
     r=pos[:,0]
@@ -53,11 +65,19 @@ def specificAngularMomentum_cylindrical(pos,vel):
     return np.dstack((jr,jtheta,jz))[0]
 
 
-def specificAngularMomentum_spherical(pos,vel):
-    """
-    PURPOSE : compute the value of specific angular momentum in gadget units
-    INPUTS : pos = cartesian coordinates in gadget format (from readsnap)
-             vel = cartesian velocity (must be same dimension than pos)
+def _specific_angular_momentum_spherical(pos,vel):
+    """Compute the specific angular momentum in spherical coordinates
+
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        spherical coordinates in gadget format (from readsnap)
+
+    vel : float array [N,3]
+        spherical velocity (must be same dimension than pos)
+   
     """
 
     r=pos[:,0]
@@ -76,17 +96,27 @@ def specificAngularMomentum_spherical(pos,vel):
 
 
 
-def specificAngularMomentum(pos,vel,coordinates='cartesian'):
-    """
-    PURPOSE : compute the value of specific angular momentum in gadget units
-    INPUTS : pos = cartesian coordinates in gadget format (from readsnap)
-             vel = cartesian velocity (must be same dimension than pos)
-             coordinates = which coordinates systema are you using ?
+def specific_angular_momentum(pos,vel,coordinates='cartesian'):
+    """Compute the specific angular momentum in spherical coordinates
+
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        spherical coordinates in gadget format (from readsnap)
+
+    vel : float array [N,3]
+        spherical velocity (must be same dimension than pos)
+
+    coordinates : string
+        which coordinates system are you using ? ('cartesian','cylindrical','spherical')
+   
     """
 
-    options={'cartesian':specificAngularMomentum_cartesian,
-                 'cylindrical':specificAngularMomentum_cylindrical,
-                 'spherical':specificAngularMomentum_spherical
+    options={'cartesian':_specific_angular_momentum_cartesian,
+             'cylindrical':_specific_angular_momentum_cylindrical,
+             'spherical':_specific_angular_momentum_spherical
                  }
 
     try:
@@ -98,25 +128,47 @@ def specificAngularMomentum(pos,vel,coordinates='cartesian'):
 
 
 
-def angularMomentum(pos,vel,mass,coordinates='cartesian'):
+def angular_momentum(pos,vel,mass,coordinates='cartesian'):
+    """Compute the angular momentum in spherical coordinates
+
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        spherical coordinates in gadget format (from readsnap)
+
+    vel : float array [N,3]
+        spherical velocity (must be same dimension than pos)
+
+    mass : float array [N]
+        mass of particles
+
+    coordinates : string
+        which coordinates system are you using ? ('cartesian','cylindrical','spherical')
+   
     """
-    PURPOSE : compute the value of angular momentum in gadget units
-    INPUTS : pos = cartesian coordinates in gadget format (from readsnap)
-             vel = cartesian velocity (must be same dimension than pos)
-             mass = mass of particles
-             coordinates = which coordinates systema are you using ?
-    """
-    
     
     return mass[:,None]*specificAngularMomentum(pos,vel,coordinates=coordinates)
 
 
+
+
+
+
 ### TEMPERATURE
-def meanMolecularWeight(Xh=0.76,ne=None):
-    """
-    PURPOSE: compute mean molecular weight
-    INPUTS:  Xh = hydrogen fraction
-             Ne = electron abundance from gadget output
+def mean_molecular_weight(Xh=0.76,ne=None):
+    """Compute mean molecular weight
+
+    Parameters:
+    ----------
+
+    Xh : float array
+        hydrogen fraction from gadget output (Nh)
+
+    Ne : float array
+        electron abundance from gadget utput
+
     """
 
     Yh=(1-Xh)/(4*Xh) #helium fraction
@@ -129,15 +181,24 @@ def meanMolecularWeight(Xh=0.76,ne=None):
     return mu
 
 
+
 def temperature(u,mu):
+    """Convert internal energy per unit mass in cgs to temperature in K.
+
+    Parameters:
+    ----------
+
+    u : float array
+         specific internal energy in cgs
+
+    mu :float array
+         mean molecular weight (must be same dimension than u)
+
+    ne : float array
+         electron abundance
+
     """
-    PURPOSE : convert internal energy per unit mass in cgs to temperature in K
-    INPUTS : u = specific internal energy in cgs
-             mu = mean molecular weight (must be same dimension than u)
-             ne = electron abundance
-    OUTPUTS : temp = temperature in K
-    """
-    from constants import *
+    from units.constants import *
 
     u2temp=mu*PROTON_MASS*(ADIABATIC_INDEX-1)/BOLTZMANN_CONSTANT #total factor
     return u2temp*u

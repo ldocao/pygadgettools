@@ -1,7 +1,7 @@
 ### NAME: constants.py
 ### PURPOSE: define constants variables in cgs units.
 
-import numpy as np
+
 
 ## Universal constants
 PARSEC                 = 3.08567758e18 #in cm

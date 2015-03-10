@@ -1,8 +1,3 @@
-from constants import *
-import computePhysics
-import createGrid
-import changeCoordinates
-import compute1DProfile
-import convertUnits
-import selectParticles
-import filename
+from names.filename import get_full_path
+from physics.fields import *
+import units.convert

@@ -6,14 +6,27 @@
 import os,sys,warnings
 
 
-def getFullPath(n,root="snapshot_",dir="./",ndigits=3,ext=""):
-    """
-    PURPOSE: return the absolute path of file to read
-    INPUTS : n = number of snapshot
-             root = name of snapshot
-             dir = directory of files
-             ext = extension to file
-             ndigits = number of digits to add leading zeros
+def get_full_path(n,root="snapshot_",dir="./",ndigits=3,ext=""):
+    """Return the absolute path of file to read
+
+    Parameters:
+    ----------
+
+    n : integer
+        snapshot number
+
+    root : string 
+        root name of snapshot
+
+    dir : string
+        directory of files
+
+    ext : string
+        extension of file
+
+    ndigits : integer
+        number of digits to add leading zeros
+
     COMMENTS : 1. currently assume one single file to read for a given time.
     """
 
