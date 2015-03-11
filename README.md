@@ -14,7 +14,7 @@ Date of creation : 27th January 2015
 
 ### REQUIREMENTS
 * numpy
-* pygadgetreader from R. Thompson
+
 
 
 ### pygadgettools
