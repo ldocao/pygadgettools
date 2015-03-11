@@ -58,11 +58,14 @@ def midpoints(x):
     return (x[1:] + x[:-1]) / 2.
 
 
-def volume_per_shell(bins):
-    '''
-    PURPOSE : return the volume inside each shell around the radius location (boundary= half distance with next points)
-    INPUTS : radius = input array of location of each radial point
-    OUTPUTS : volume_per_shell = volumen inside each shell whose center is given by radius
+def sphericalvolume_per_shell(bins):
+    '''Return the volume inside each spherical shell whose radius are defined by bins (boundary= half distance with next points)
+
+    Parameters:
+    ----------
+
+    bins : float array
+       bins limits
     '''
 
     def volume_sphere(r):
