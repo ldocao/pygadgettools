@@ -1,7 +1,7 @@
 ###NAME: fields.py
 ###PURPOSE: compute some interesting physical quantities
 
-from common import *
+
 import numpy as np
 
 

@@ -1,6 +1,6 @@
 ### NAME: convert.py
 ### PURPOSE: convert units from Gadget Units (GU) to cgs
-from common import UnitLength, UnitMass, UnitVelocity, UnitTime, UnitEnergy
+from units.common import UnitLength, UnitMass, UnitVelocity, UnitTime, UnitEnergy
 
 
 
