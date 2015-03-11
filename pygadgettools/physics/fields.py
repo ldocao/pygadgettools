@@ -1,10 +1,10 @@
 ###NAME: fields.py
 ###PURPOSE: compute some interesting physical quantities
 
-
+import sys
 import numpy as np
-
-
+from units.common import PROTON_MASS,ADIABATIC_INDEX, BOLTZMANN_CONSTANT
+from internals.sanity_check import _check_if_keyword_is_correct
 
          
 
@@ -122,6 +122,9 @@ def specific_angular_momentum(pos,vel,coordinates='cart'):
              'sph':_specific_angular_momentum_spherical
                  }
 
+    list_sys=["cart","cyl","sph"] #list of authorized strings for sys1 and sys2. I could also authorize complete names
+    _check_if_keyword_is_correct(coordinates,list_sys)
+        
     try:
         return options[coordinates](pos,vel)
     except KeyError: #if wrong coordinates system, quit
@@ -152,7 +155,7 @@ def angular_momentum(pos,vel,mass,coordinates='cart'):
    
     """
     
-    return mass[:,None]*specificAngularMomentum(pos,vel,coordinates=coordinates)
+    return mass[:,None]*specific_angular_momentum(pos,vel,coordinates=coordinates)
 
 
 
