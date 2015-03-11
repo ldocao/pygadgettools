@@ -31,7 +31,7 @@ def get_full_path(n,root="snapshot_",dir="./",ndigits=3,ext=""):
 
     numbering=str(n).zfill(ndigits) ##add leading zeros
     dir=os.path.join(dir, '') #append '/' character if needed
-    input_file=dir+root+numbering+ext
+    input_file=dir+root+numbering+'.'+ext
 
     return input_file
 
