@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pygadgettools',
-      version='0.2',
+      version='1.0',
       description='Toolbox with python scripts and function for basic analysis of GADGET data.',
       url='https://github.com/ldocao/pygadgettools',
       author='Long DO CAO',
