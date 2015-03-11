@@ -1,9 +1,8 @@
 ###NAME: filename.py
 ###PURPOSE: filename handling
 
+import os
 
-
-import os,sys,warnings
 
 
 def get_full_path(n,root="snapshot_",dir="./",ndigits=3,ext=""):

@@ -1,21 +1,109 @@
-### NAME: changeCoordinates.py
+### NAME: coordinates.py
 ### PURPOSE: convert position, velocity, and energy to other coordinate systems or units
 
 
 import numpy as np
-import warnings,sys,pdb
+import warnings
+import sys
+from internals.sanity_check import \
+    _check_if_keyword_is_correct, _check_dimension
+
+
+
+def change_coordinates(pos,variable_type,sys1,sys2,*args):
+    """Change the coordinates system of a variable
+
+    Parameters:
+    ----------
+
+    pos : float array [N,3]
+        position of particles
+
+    variable_type : string
+        type of the variable to convert (eg.: pos, vel, etc.)
+
+    sys1 : string
+        the initial coordinate system of the variables you are passing in. All variables MUST be in the same coordinate system. Currently available : ('cart', 'cyl', 'sph') for (cartesian, cylindrical, spherical) respectively.
+
+    sys2 : string
+        the final coordinate system you want your variables to be in. Currently available : ('cart', 'cyl', 'sph') for (cartesian, cylindrical, spherical) respectively. sys2 must be different than sys1.
+
+    *args : float array [N,3]
+        other variables useful for conversion. For example, if you want to convert velocity, you may provide it here as an additional argument.
+
+
+    Examples:
+    --------
+    
+    >>> POS=np.array([[1,1,0]])
+    >>> change_coordinates(POS,"pos","cart","sph")
+    array([[ 1.41421356,  1.57079633,  0.78539816]])
+
+    >>> POS=np.array([[1,np.pi,1]])
+    >>> VEL=np.array([[1,1,1]])
+    >>> change_coordinates(POS,"vel","cyl","cart",VEL)
+    array([[-1., -1.,  1.]])
+    
+    """
+
+        
+    ## some sanity check
+    list_sys=["cart","cyl","sph"] #list of authorized strings for sys1 and sys2. I could also authorize complete names
+    list_var=["pos","vel"] #list of authorized strings for variable_type
+    
+    _check_if_keyword_is_correct(sys1,list_sys)
+    _check_if_keyword_is_correct(sys2,list_sys)
+    _check_if_keyword_is_correct(variable_type,list_var)
+    ##should implement here a sanity check for pos dimension
+
+
+    ## select the good function to call
+    case="".join([sys1,sys2])    
+    if variable_type == "pos":
+        options={'cartcyl':_position_cartesian2cylindrical,
+                 'cartsph':_position_cartesian2spherical,
+                 'cylcart':_position_cylindrical2cartesian,
+                 'cylsph':_position_cylindrical2spherical,
+                 'sphcart':_position_spherical2cartesian,
+                 'sphcyl':_position_spherical2cylindrical
+                    }
+        output=options[case](pos)
+    elif variable_type == "vel":
+        options={'cartcyl':_velocity_cartesian2cylindrical,
+                 'cartsph':_velocity_cartesian2spherical,
+                 'cylcart':_velocity_cylindrical2cartesian,
+                 'cylsph':_velocity_cylindrical2spherical,
+                 'sphcart':_velocity_spherical2cartesian,
+                 'sphcyl':_velocity_spherical2cylindrical
+                    }
+        output=options[case](pos,*args)
+    else: #should never go here if the sanity check above is properly done
+        sys.exit()
+    
+    return output
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 ## POSITION
-def position_cartesian2spherical(pos):
-    '''
-    PURPOSE : convert POS cartesian into spherical coordinates
-    INPUTS : pos = position in cartesian coordinates in Gadget format
-             center = center of the new coordinate system in cartesian
-    OUTPUTS: newpos = position in spherical coordinates in Gadget format
-    '''
+def _position_cartesian2spherical(pos):
+    """Convert POS cartesian into spherical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cartesian coordinates in Gadget format
+    """
 
     #save cartesian position of each particle
     x=pos[:,0]
@@ -37,12 +125,15 @@ def position_cartesian2spherical(pos):
 
 
 
-def position_cartesian2cylindrical(pos):
-    '''
-    PURPOSE : convert POS cartesian into cylindrical coordinates
-    INPUTS : pos = position in cartesian coordinates in Gadget format
-             center = center of the new coordinate system in cartesian
-    '''
+def _position_cartesian2cylindrical(pos):
+    """Convert POS cartesian into cylindrical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cartesian coordinates in Gadget format
+    """
+
     
     #save cartesian position of each particle
     x=pos[:,0]
@@ -57,20 +148,22 @@ def position_cartesian2cylindrical(pos):
 
 
 
-def position_spherical2cartesian(pos):
-    """
-    PURPOSE: convert spherical to cartesian coordinates
-    INPUTS: pos = [r,theta,phi]
-    COMMENTS: * center is not supported yet
-    """
+def _position_spherical2cartesian(pos):
+    """Convert POS spherical into cartesian coordinates
 
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in spherical coordinates in Gadget format
+    """
+    
     r=pos[:,0]
     theta=pos[:,1]
     phi=pos[:,2]
 
     if any(theta>np.pi) or any(theta<0): #sanity check. not necessary for phi.
-        warnings.warn("Theta beyond [0,pi]. Exiting.")
-        sys.exit()
+        raise ValueError, "Theta beyond [0,pi]. Exiting."
+
 
     x=r*np.sin(theta)*np.cos(phi)
     y=r*np.sin(theta)*np.sin(phi)
@@ -79,20 +172,22 @@ def position_spherical2cartesian(pos):
     return np.dstack((x,y,z))[0]
 
 
-def position_spherical2cylindrical(pos):
+def _position_spherical2cylindrical(pos):
+    """Convert POS spherical into cylindrical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in spherical coordinates in Gadget format
     """
-    PURPOSE: convert position spherical to cylindrical coordinates
-    INPUTS: pos = [r,theta,phi]
-    """
+    
 
     r=pos[:,0]
     theta_spherical=pos[:,1]
     phi_spherical=pos[:,2]
 
     if any(theta_spherical>np.pi) or any(theta_spherical<0): #sanity check. not necessary for phi.
-        warnings.warn("Theta beyond [0,pi]. Exiting.")
-        sys.exit()
-
+        raise ValueError, "Theta beyond [0,pi]. Exiting."
 
     rho=r*np.sin(theta_spherical)
     theta_cylindrical=phi_spherical
@@ -101,13 +196,15 @@ def position_spherical2cylindrical(pos):
     return np.dstack((rho,theta_cylindrical,z))[0]
 
 
-def position_cylindrical2cartesian(pos):
-    """
-    PURPOSE: convert cylindrical to cartesian coordinates
-    INPUTS: pos = [rho,theta,z]
-    COMMENTS: * center is not supported yet
-    """
+def _position_cylindrical2cartesian(pos):
+    """Convert POS cylindrical into cartesian coordinates
 
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cylindrical coordinates in Gadget format
+    """
+    
     rho=pos[:,0]
     theta=pos[:,1]
     z=pos[:,2]
@@ -119,11 +216,13 @@ def position_cylindrical2cartesian(pos):
     return np.dstack((x,y,z))[0]
 
 
-def position_cylindrical2spherical(pos):
-    """
-    PURPOSE: convert cylindrical to spherical coordinates
-    INPUTS: pos = [r,theta,z]
-    COMMENTS: * center is not supported yet
+def _position_cylindrical2spherical(pos):
+    """Convert POS cylindrical into spherical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cylindrical coordinates in Gadget format
     """
 
     rho=pos[:,0]
@@ -141,12 +240,19 @@ def position_cylindrical2spherical(pos):
 
 
 ## VELOCITY
-def velocity_cartesian2cylindrical(pos,vel):
-    '''
-    PURPOSE : convert VEL cartesian into cylindrical coordinates
-    INPUTS : pos = position in cartesian coordinates in Gadget format
-             vel = velocity in cartesian coordinates
-    '''
+def _velocity_cartesian2cylindrical(pos,vel):
+    """Convert velocity from cartesian to cylindrical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cartesian coordinates
+
+    vel : float array (N,3)
+        velocity in cartesian coordinates
+    """
+    
+    
     
     #save cartesian velocities
     vx=vel[:,0]
@@ -154,7 +260,7 @@ def velocity_cartesian2cylindrical(pos,vel):
     vz=vel[:,2]
 
     #convert to cylindrical coordinates
-    pos_cyl=position_cartesian2cylindrical(pos) #cylindrical coordinates
+    pos_cyl=_position_cartesian2cylindrical(pos) #cylindrical coordinates
     theta=pos_cyl[:,1]
 
     #compute cylindrical velocities
@@ -169,12 +275,18 @@ def velocity_cartesian2cylindrical(pos,vel):
 
 
 
-def velocity_cartesian2spherical(pos,vel):
-    '''
-    PURPOSE : convert VEL cartesian into spherical coordinates
-    INPUTS : pos = position in cartesian coordinates in Gadget format
-             vel = velocity in cartesian coordinates
-    '''
+def _velocity_cartesian2spherical(pos,vel):
+    """Convert velocity from cartesian to spherical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cartesian coordinates
+
+    vel : float array (N,3)
+        velocity in cartesian coordinates
+    """
+
     
     #save cartesian position of each particle
     x=pos[:,0]
@@ -187,7 +299,7 @@ def velocity_cartesian2spherical(pos,vel):
     vz=vel[:,2]
 
     #convert to spherical coordinates
-    pos_sph=position_cartesian2spherical(pos) #spherical coordinates
+    pos_sph=_position_cartesian2spherical(pos) #spherical coordinates
     r=pos_sph[:,0]
     theta=pos_sph[:,1]
     phi=pos_sph[:,2]
@@ -210,12 +322,18 @@ def velocity_cartesian2spherical(pos,vel):
 
 
 
-def velocity_cylindrical2cartesian(pos,vel):
-    '''
-    PURPOSE : convert VEL cartesian into spherical coordinates
-    INPUTS : pos = position in cylindrical coordinates similar to Gadget format
-             vel = velocity in cylindrical coordinates similar to Gadget format
-    '''
+def _velocity_cylindrical2cartesian(pos,vel):
+    """Convert velocity from cylindrical to cartesian coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cylindrical coordinates
+
+    vel : float array (N,3)
+        velocity in cylindrical coordinates
+    """
+    
     
     #save cartesian position of each particle
     theta=pos[:,1]
@@ -234,12 +352,40 @@ def velocity_cylindrical2cartesian(pos,vel):
 
 
 
-def velocity_spherical2cartesian(pos,vel):
-    '''
-    PURPOSE : convert VEL spherical into cartesian coordinates
-    INPUTS : pos = position in spherical coordinates similar to Gadget format
-             vel = velocity in spherical coordinates similar to Gadget format
-    '''
+
+
+def _velocity_cylindrical2spherical(pos,vel):
+    """Convert velocity from cylindrical to spherical coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in cylindrical coordinates
+
+    vel : float array (N,3)
+        velocity in cylindrical coordinates
+    """
+    
+    pos_cart=_position_cylindrical2cartesian(pos)
+    vel_cart=_velocity_cylindrical2cartesian(pos,vel)
+    vel_sph=_velocity_cartesian2spherical(pos_cart,vel_cart)
+
+    return vel_sph
+
+
+
+
+def _velocity_spherical2cartesian(pos,vel):
+    """Convert velocity from spherical to cartesian coordinates
+
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in spherical coordinates
+
+    vel : float array (N,3)
+        velocity in spherical coordinates
+    """
     
     #save cartesian position of each particle
     r=pos[:,0]
@@ -262,34 +408,23 @@ def velocity_spherical2cartesian(pos,vel):
 
 
 
+def _velocity_spherical2cylindrical(pos,vel):
+    """Convert velocity from spherical to cylindrical coordinates
 
+    Parameters:
+    ----------
+    pos : float array (N,3)
+        position in spherical coordinates
 
-def velocity_cylindrical2spherical(pos,vel):
-    '''
-    PURPOSE : convert VEL cylindrical into spherical coordinates
-    INPUTS : pos = position in cylindrical coordinates similar to Gadget format
-             vel = velocity in cylindrical coordinates similar to Gadget format
-    '''
+    vel : float array (N,3)
+        velocity in spherical coordinates
+    """
     
-    pos_cart=position_cylindrical2cartesian(pos)
-    vel_cart=velocity_cylindrical2cartesian(pos,vel)
-    vel_sph=velocity_cartesian2spherical(pos_cart,vel_cart)
-
-    return vel_sph
-
-
-def velocity_spherical2cylindrical(pos,vel):
-    '''
-    PURPOSE : convert VEL spherical into cylindrical coordinates
-    INPUTS : pos = position in spherical coordinates similar to Gadget format
-             vel = velocity in spherical coordinates similar to Gadget format
-    '''
-    
-    pos_cart=position_spherical2cartesian(pos)
-    vel_cart=velocity_spherical2cartesian(pos,vel)
-    vel_cyl=velocity_cartesian2cylindrical(pos_cart,vel_cart)
+    pos_cart=_position_spherical2cartesian(pos)
+    vel_cart=_velocity_spherical2cartesian(pos,vel)
+    vel_cyl=_velocity_cartesian2cylindrical(pos_cart,vel_cart)
 
     return vel_cyl
 
 
-## ENERGY
+

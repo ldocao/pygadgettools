@@ -6,6 +6,7 @@ import numpy as np
 
 
 
+         
 
 ### ANGULAR MOMENTUM
 def _specific_angular_momentum_cartesian(pos,vel):
@@ -98,7 +99,7 @@ def _specific_angular_momentum_spherical(pos,vel):
 
 
 
-def specific_angular_momentum(pos,vel,coordinates='cartesian'):
+def specific_angular_momentum(pos,vel,coordinates='cart'):
     """Compute the specific angular momentum in spherical coordinates
 
 
@@ -112,13 +113,13 @@ def specific_angular_momentum(pos,vel,coordinates='cartesian'):
         spherical velocity (must be same dimension than pos)
 
     coordinates : string
-        which coordinates system are you using ? ('cartesian','cylindrical','spherical')
+        which coordinates system are you using ? ('cart','cyl','sph')
    
     """
 
-    options={'cartesian':_specific_angular_momentum_cartesian,
-             'cylindrical':_specific_angular_momentum_cylindrical,
-             'spherical':_specific_angular_momentum_spherical
+    options={'cart':_specific_angular_momentum_cartesian,
+             'cyl':_specific_angular_momentum_cylindrical,
+             'sph':_specific_angular_momentum_spherical
                  }
 
     try:
@@ -130,7 +131,7 @@ def specific_angular_momentum(pos,vel,coordinates='cartesian'):
 
 
 
-def angular_momentum(pos,vel,mass,coordinates='cartesian'):
+def angular_momentum(pos,vel,mass,coordinates='cart'):
     """Compute the angular momentum in spherical coordinates
 
 
@@ -147,7 +148,7 @@ def angular_momentum(pos,vel,mass,coordinates='cartesian'):
         mass of particles
 
     coordinates : string
-        which coordinates system are you using ? ('cartesian','cylindrical','spherical')
+        which coordinates system are you using ? ('cart','cyl','sph')
    
     """
     

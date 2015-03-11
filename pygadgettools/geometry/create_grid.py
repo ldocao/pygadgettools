@@ -1,16 +1,30 @@
-###NAME: createGrid.py
+###NAME: create_grid.py
 ###PURPOSE: all grid related functions
 
 import numpy as np
 
-def gridAround(x):
-    """
-    PURPOSE: return the midpoint between 2 pairs of number with fixed boundary.
-    EXEMPLE:
-    x = array([ 0. ,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9])
-    return >> array([ 0.  ,  0.05,  0.15,  0.25,  0.35,  0.45,  0.55,  0.65,  0.75, 0.85,  0.9 ])
+
+
+def grid_around(x):
+    """Return the midpoint between 2 pairs of number with fixed boundary.
+
+    Parameters:
+    ----------
+
+    x : float array
+       The array along which you want the grid
+
+    Example:
+    -------
+    
+    >>> grid_around(np.arange(0,10))
+    array([ 0. ,  0.5,  1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9. ])
+
     """
 
+
+    ### I could probably change this function and create instead a method to create a grid around a numpy array, somethings like x.grid_around('mid')
+    
     nr=len(x)
     dr=np.diff(x)
     ndr=len(dr)
@@ -23,17 +37,28 @@ def gridAround(x):
 
     return coradius
 
-def midPoint(x):
-    """
-    PURPOSE: return the midpoint between 2 pairs of number
-    EXEMPLE:
-    x = array([ 0. ,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9])
-    return >> array([ 0.05,  0.15,  0.25,  0.35,  0.45,  0.55,  0.65,  0.75,  0.85])
-    """
-    return (x[1:] + x[:-1]) / 2
 
 
-def volumePerShell(bins):
+def midpoints(x):
+    """Return the midpoint between 2 pairs of number
+    
+    Parameters:
+    ----------
+
+    x : float array
+       The array along which you want the grid
+
+    Example:
+    -------
+    
+    >>> midpoints(np.arange(0,5))
+    array([ 0.5,  1.5,  2.5,  3.5])
+    
+    """
+    return (x[1:] + x[:-1]) / 2.
+
+
+def volume_per_shell(bins):
     '''
     PURPOSE : return the volume inside each shell around the radius location (boundary= half distance with next points)
     INPUTS : radius = input array of location of each radial point

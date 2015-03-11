@@ -1,8 +1,7 @@
 ### NAME: convert.py
 ### PURPOSE: convert units from Gadget Units (GU) to cgs
+from common import UnitLength, UnitMass, UnitVelocity, UnitTime, UnitEnergy
 
-
-from common import *
 
 
 def length(l):
@@ -32,7 +31,7 @@ def energypermass(u):
 def angular_momentum(l):
     return l*UnitLength*UnitMass*UnitVelocity
 
-def specificangular_momentum(l):
+def specific_angular_momentum(l):
     return l*UnitLength*UnitVelocity
 
 def accretion_rate(l):
