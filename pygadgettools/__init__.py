@@ -6,5 +6,4 @@ from units import convert
 from names.filename import get_full_path
 from geometry.coordinates import change_coordinates
 from geometry import create_grid
-from analysis import profile
-
+import filter.spatial #not perfect because np and other functions are also accessible, but whatever...

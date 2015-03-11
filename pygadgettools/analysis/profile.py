@@ -179,5 +179,5 @@ def spherical_densityDM(r,mass,radius):
     
     coradius=grid.gridAround(radius)
     mass_shell=mass_per_shell(r,mass,coradius) #mass per shell
-    volume_shell=grid.volume_per_shell(coradius) #volume per shell
+    volume_shell=grid.sphericalvolume_per_shell(coradius) #volume per shell
     return mass_shell/volume_shell

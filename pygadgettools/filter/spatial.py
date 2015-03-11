@@ -1,8 +1,6 @@
 ###NAME: spatial.py
 ###PURPOSE: select particles with spatial filter
 
-
-import numpy as np
 from geometry.coordinates import change_coordinates
 
 
