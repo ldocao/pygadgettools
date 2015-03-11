@@ -3,7 +3,7 @@
 
 import numpy as np
 import geometry.create_grid as grid
-
+import pdb
 
 
 def mean(x,q,radius):
@@ -26,7 +26,7 @@ def mean(x,q,radius):
     ##this is a very slow function. I optimized already a bit, but maybe we can do even better...
     
     nr=np.size(radius)
-    coradius=grid.gridAround(radius)
+    coradius=grid.grid_around(radius)
     
 
     #copy original values
@@ -63,7 +63,7 @@ def min(x,q,radius):
     """
 
     nr=np.size(radius)
-    coradius=grid.gridAround(radius)
+    coradius=grid.grid_around(radius)
     
 
     #copy original values
@@ -72,7 +72,10 @@ def min(x,q,radius):
     meanq=np.zeros(nr)
     for i in range(0,nr):
         sublist=(xx>=coradius[i]) & (xx<coradius[i+1])
-        meanq[i]=np.min(qq[sublist])
+        if np.sum(sublist) == 0: #handle if sublist is empty
+            meanq[i]=float('NaN')
+        else:
+            meanq[i]=np.min(qq[sublist])
 
         #remove from the list already used data (for speedup)
         qq=qq[np.logical_not(sublist)] 
@@ -177,7 +180,7 @@ def spherical_densityDM(r,mass,radius):
 
     """
     
-    coradius=grid.gridAround(radius)
+    coradius=grid.grid_around(radius)
     mass_shell=mass_per_shell(r,mass,coradius) #mass per shell
     volume_shell=grid.sphericalvolume_per_shell(coradius) #volume per shell
     return mass_shell/volume_shell
